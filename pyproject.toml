@@ -1,0 +1,62 @@
+[project]
+name = "deepagent-template"
+version = "0.1.0"
+description = "A LangChain DeepAgent template"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Tobias Nimo", email = "tobiasnimo99@gmail.com" }]
+
+dependencies = [
+    # ── Deep Agents ────────────────────────────────────────────────────────────
+    "deepagents>=0.4.4",
+    # ── LangGraph / LangChain ──────────────────────────────────────────────────
+    "langgraph>=0.2.0",
+    "langchain>=0.3.0",
+    "langchain-core>=0.3.0",
+    "langchain-groq>=0.2.0",
+    "langchain-mcp-adapters>=0.1.0",
+    # ── Config ─────────────────────────────────────────────────────────────────
+    "pydantic-settings>=2.0.0",
+    # ── LangGraph CLI ──────────────────────────────────────────────────────────
+    "langgraph-cli[inmem]>=0.4.12",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "httpx>=0.27.0",
+]
+
+# To start a LangGraph dev server:
+#   uv run langgraph dev
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+# ─── Ruff ───────────────────────────────────────────────────────────────────
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+# ─── Pytest ─────────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+
+# ─── MyPy ───────────────────────────────────────────────────────────────────
+[tool.mypy]
+python_version = "3.12"
+strict = false
+ignore_missing_imports = true
