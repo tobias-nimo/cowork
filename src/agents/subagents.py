@@ -4,7 +4,7 @@ from langchain_groq import ChatGroq
 
 from ..config import settings
 from ..prompts import prompts
-from ..tools.web_research import tavily_tools
+from ..tools.web_search import tavily_tools
 
 llm = ChatGroq(
     model="openai/gpt-oss-20b",

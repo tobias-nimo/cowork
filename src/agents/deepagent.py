@@ -36,8 +36,8 @@ deepagent = create_deep_agent(
     # HITL
     interrupt_on={
         "write_file": True,  # Default: approve, edit, reject
-        "read_file": False,  # No interrupts needed
         "edit_file": True,   # Default: approve, edit, reject
+        "read_file": False,  # No interrupts needed
     },
     #checkpointer=InMemorySaver(), # Checkpointer is REQUIRED for human-in-the-loop!
     # But LangGraph API platform manages persistence - No checkpointer needed.
