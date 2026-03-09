@@ -1,4 +1,4 @@
-# src/tools/groq_vision.py
+# src/tools/groq.py
 
 """
 Describe a local image file using Groq's vision model.

@@ -8,6 +8,15 @@ A production-ready template for building [**LangChain Deep Agents**](https://doc
 |------|---------|---------|
 | Python | ≥ 3.12 | [python.org](https://python.org) |
 | [uv](https://docs.astral.sh/uv/) | latest | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
+| Node.js | ≥ 18 | [nodejs.org](https://nodejs.org) |
+| [gws](https://github.com/googleworkspace/cli) (Google Workspace CLI) | latest | `npm install -g @googleworkspace/cli` |
+
+### Google Workspace auth (one-time)
+
+```bash
+gws auth setup   # creates GCP project and OAuth credentials
+gws auth login   # authenticate with your Google account
+```
 
 ## Quick Start
 

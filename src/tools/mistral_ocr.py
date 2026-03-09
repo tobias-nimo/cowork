@@ -135,7 +135,7 @@ def build_markdown(pages) -> str:
 # ── Tool ──────────────────────────────────────────────────────────────────────
 
 @tool
-def convert_to_md(doc_path: str) -> str:
+def to_md(doc_path: str) -> str:
     """
     Runs OCR pipeline on local document or image.
     Saves a Markdown file and extracted images into a folder next to the

@@ -4,7 +4,9 @@ from langchain_groq import ChatGroq
 
 from ..config import settings
 from ..prompts import prompts
-from ..tools.web_search import tavily_tools
+
+from ..tools.tavily_mcp import web_search_tools
+from ..tools.gws_mcp import gws_tools
 
 llm = ChatGroq(
     model="openai/gpt-oss-20b",
@@ -16,7 +18,16 @@ research_subagent = {
     "model": llm,
     "description": "Performs precise, in-depth web research and returns structured, reliable findings.",
     "system_prompt": prompts.get("research"),
-    "tools": tavily_tools,
+    "tools": web_search_tools,
 }
 
-subagents = [research_subagent]
+gws_subagent = {
+    "name": "gws-subagent",
+    "model": llm,
+    "description": " Interacts with the full Google Workspace suite (Drive, Gmail, Calendar, Docs and Sheets) via the gws MCP — use it to read/write files in drive, manage emails, schedule events.",
+    "system_prompt": prompts.get("google"),
+    "skills": ["./src/skills/gws/"],
+    "tools": gws_tools,
+}
+
+subagents = [research_subagent, gws_subagent]
