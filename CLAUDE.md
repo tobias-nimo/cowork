@@ -25,10 +25,19 @@ This project uses skills that contain up-to-date patterns and working reference 
 - **deep-agents-memory** - Invoke for long-term memory with StoreBackend
 - **deep-agents-orchestration** - Invoke for multi-agent coordination
 
+## Project Structure
+
+- **Main agent**: `src/agents/deepagent.py` — exports `cowork_agent`
+- **Subagents**: `src/agents/subagents.py` — `research-subagent` (Tavily), `gws-subagent` (Google Workspace)
+- **Tools**: `src/tools/` — `gws_mcp.py`, `tavily_mcp.py`, `groq.py`, `mistral_ocr.py`, `md_convert.py`
+- **Skills**: `src/skills/general/` (main agent), `src/skills/gws/` (gws-subagent)
+- **Prompts**: `src/prompts/` — `general.md`, `research.md`, `google.md`
+
 ## Environment Setup
 
 Required environment variables:
 ```bash
-OPENAI_API_KEY=<your-key>  # For OpenAI models
-ANTHROPIC_API_KEY=<your-key>  # For Anthropic models
+GROQ_API_KEY=<your-key>      # LLM calls (all agents)
+MISTRAL_API_KEY=<your-key>   # OCR via mistral_ocr.py
+TAVILY_API_KEY=<your-key>    # Web search via tavily_mcp.py
 ```

@@ -54,8 +54,9 @@ Copy `example.env` to `.env` and set the following:
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `GROQ_API_KEY` | Yes | [Groq](https://console.groq.com) API key (free tier available) |
-| `TAVILY_API_KEY` | Yes | [Tavily](https://tavily.com) API key for web search |
+| `GROQ_API_KEY` | Yes | [Groq](https://console.groq.com) API key — used for all LLM calls |
+| `MISTRAL_API_KEY` | Yes | [Mistral](https://console.mistral.ai) API key — used for OCR (`to_md` tool) |
+| `TAVILY_API_KEY` | Yes | [Tavily](https://tavily.com) API key — used by the research subagent |
 | `LANGCHAIN_TRACING_V2` | No | Set to `true` to enable LangSmith tracing |
 | `LANGCHAIN_API_KEY` | No | LangSmith API key |
 | `LANGCHAIN_PROJECT` | No | LangSmith project name |
@@ -101,22 +102,17 @@ Studio lets you visually inspect graph runs, step through nodes, and replay trac
 ## Project Structure
 
 ```
-deepagent-template/
+cowork/
 ├── src/
-│   ├── agent/
-│   │   ├── graph.py          # Main LangGraph graph; exports `graph`
-│   │   └── subagents.py      # Subagent definitions (research-agent)
+│   ├── agents/
+│   │   ├── deepagent.py      # Main agent; exports `cowork_agent`
+│   │   └── subagents.py      # research-subagent, gws-subagent
 │   ├── tools/
-│   │   └── web_search_tools.py  # Tavily MCP tool loader
 │   ├── prompts/
-│   │   ├── __init__.py       # Prompt loader (reads .md files by name)
-│   │   ├── coordinator-agent.md
-│   │   └── research-subagent.md
 │   ├── skills/
-│   │   ├── skill-creator/    # Guidance for creating new skills
-│   │   └── web-research/     # Structured web research workflow
-│   ├── config.py             # Pydantic settings (loads from .env)
-│   └── server.py             # Optional FastAPI server for custom endpoints
+│   │   ├── general/          # Skills loaded by the main agent
+│   │   └── gws/              # Skills loaded by the gws-subagent
+│   └── config.py             # Pydantic settings (loads from .env)
 ├── tests/                    # Pytest test suite
 ├── langgraph.json            # LangGraph server config
 ├── pyproject.toml            # Python dependencies and tooling
@@ -125,9 +121,9 @@ deepagent-template/
 
 ## LLM Configuration
 
-The template defaults to **Groq** (free tier).
+The agent defaults to **Groq** (free tier, fast inference).
 
-To switch providers, update `src/agent/graph.py` and `src/agent/subagents.py`:
+To switch providers, update `src/agents/deepagent.py` and `src/agents/subagents.py`:
 
 ```python
 # OpenAI
@@ -139,12 +135,24 @@ from langchain_anthropic import ChatAnthropic
 llm = ChatAnthropic(model="claude-opus-4-6", api_key=settings.anthropic_api_key)
 ```
 
+## Subagents
+
+| Subagent | Tools | Description |
+|----------|-------|-------------|
+| `research-subagent` | Tavily MCP | Web research and fact-finding |
+| `gws-subagent` | Google Workspace MCP | Gmail, Drive, Calendar, Docs, Sheets |
+
 ## Skills
 
-Skills are markdown files that provide the agent with specialized knowledge and workflows.
-They live in `src/skills/<skill-name>/SKILL.md`.
+Skills are markdown files that give agents specialized knowledge and step-by-step workflows.
+They live in `src/skills/<group>/<skill-name>/SKILL.md`.
 
-See `src/skills/skill-creator/SKILL.md` for the full guide.
+| Group | Path | Loaded by |
+|-------|------|-----------|
+| General | `src/skills/general/` | Main agent |
+| Google Workspace | `src/skills/gws/` | `gws-subagent` |
+
+See `src/skills/general/skill-creator/SKILL.md` for the full guide on creating new skills.
 
 ## Human-in-the-Loop (HITL)
 
