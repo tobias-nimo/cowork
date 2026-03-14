@@ -22,7 +22,6 @@ llm = ChatGroq(
 # --- Backend ---
 backend = LocalShellBackend(
     root_dir=settings.project_root,
-    virtual_mode=False, # Only affects filesystem operations.
     inherit_env=False,
     )
 
