@@ -69,7 +69,10 @@ def describe_image(image_path: str, query: str = "") -> str:
         query: Optional question about the image. If empty, only the detailed description is returned.
     """
     try:
-        path = Path(image_path).expanduser().resolve()
+        path = Path(image_path).expanduser()
+        if not path.is_absolute():
+            path = Path(settings.project_root) / path
+        path = path.resolve()
 
         if not path.exists():
             raise ToolException(f"Image not found: {path}")

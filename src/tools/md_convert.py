@@ -16,11 +16,16 @@ from pathlib import Path
 from langchain.tools import tool
 from langchain_core.tools import ToolException
 
+from ..config import settings
+
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _resolve_md(md_path: str) -> Path:
-    path = Path(md_path).expanduser().resolve()
+    path = Path(md_path).expanduser()
+    if not path.is_absolute():
+        path = Path(settings.project_root) / path
+    path = path.resolve()
     if not path.exists():
         raise ToolException(f"File not found: {path}")
     if path.suffix.lower() != ".md":

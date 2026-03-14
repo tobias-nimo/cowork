@@ -156,7 +156,10 @@ def to_md(doc_path: str) -> str:
         The absolute path to the output folder as a string.
     """
     try:
-        path = Path(doc_path).expanduser().resolve()
+        path = Path(doc_path).expanduser()
+        if not path.is_absolute():
+            path = Path(settings.project_root) / path
+        path = path.resolve()
 
         if not path.exists():
             raise ToolException(f"File not found: {path}")
