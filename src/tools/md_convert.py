@@ -14,6 +14,7 @@ import subprocess
 from pathlib import Path
 
 from langchain.tools import tool
+from langchain_core.tools import ToolException
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -21,28 +22,28 @@ from langchain.tools import tool
 def _resolve_md(md_path: str) -> Path:
     path = Path(md_path).expanduser().resolve()
     if not path.exists():
-        raise FileNotFoundError(f"File not found: {path}")
+        raise ToolException(f"File not found: {path}")
     if path.suffix.lower() != ".md":
-        raise ValueError(f"Expected a .md file, got: '{path.suffix}'")
+        raise ToolException(f"Expected a .md file, got: '{path.suffix}'")
     return path
 
 
 def _run_pandoc(args: list[str]) -> None:
-    """Run pandoc with the given args, raising RuntimeError on failure."""
+    """Run pandoc with the given args, raising ToolException on failure."""
     try:
-        result = subprocess.run(
+        subprocess.run(
             ["pandoc", *args],
             capture_output=True,
             text=True,
             check=True,
         )
     except FileNotFoundError:
-        raise RuntimeError(
+        raise ToolException(
             "pandoc is not installed or not on PATH. "
-            "Install it from https://pandoc.org/installing.html"
+            "Install it with: brew install pandoc"
         )
     except subprocess.CalledProcessError as e:
-        raise RuntimeError(f"pandoc failed:\n{e.stderr.strip()}")
+        raise ToolException(f"pandoc failed:\n{e.stderr.strip()}")
 
 
 # ── Tools ─────────────────────────────────────────────────────────────────────
@@ -67,7 +68,6 @@ def md_to_pdf(md_path: str) -> str:
 
     return str(output)
 
-
 @tool
 def md_to_docx(md_path: str) -> str:
     """
@@ -86,3 +86,6 @@ def md_to_docx(md_path: str) -> str:
     ])
 
     return str(output)
+
+md_to_docx.handle_tool_error = True
+md_to_pdf.handle_tool_error = True

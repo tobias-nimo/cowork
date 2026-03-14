@@ -13,6 +13,7 @@ import base64
 from pathlib import Path
 
 from langchain.tools import tool
+from langchain_core.tools import ToolException
 from mistralai.client import Mistral
 
 from ..config import settings
@@ -154,31 +155,40 @@ def to_md(doc_path: str) -> str:
     Returns:
         The absolute path to the output folder as a string.
     """
-    path = Path(doc_path).expanduser().resolve()
+    try:
+        path = Path(doc_path).expanduser().resolve()
 
-    if not path.exists():
-        raise FileNotFoundError(f"File not found: {path}")
+        if not path.exists():
+            raise ToolException(f"File not found: {path}")
 
-    # Output folder sits next to the source file, named after it (no extension)
-    output_dir = path.parent / path.stem
-    output_dir.mkdir(exist_ok=True)
+        # Output folder sits next to the source file, named after it (no extension)
+        output_dir = path.parent / path.stem
+        output_dir.mkdir(exist_ok=True)
 
-    # Call Mistral API
-    client = Mistral(api_key=settings.mistral_api_key)
+        # Call Mistral API
+        client = Mistral(api_key=settings.mistral_api_key)
 
-    doc_type = detect_document_type(path)
-    document = build_document_payload(path, doc_type)
+        doc_type = detect_document_type(path)
+        document = build_document_payload(path, doc_type)
 
-    response = client.ocr.process(
-        model="mistral-ocr-latest",
-        document=document,
-        include_image_base64=True,  # required to get base64 image data back
-    )
+        response = client.ocr.process(
+            model="mistral-ocr-latest",
+            document=document,
+            include_image_base64=True,  # required to get base64 image data back
+        )
 
-    # Save outputs
-    save_images(response.pages, output_dir)
+        # Save outputs
+        save_images(response.pages, output_dir)
 
-    md_path = output_dir / f"{path.stem}.md"
-    md_path.write_text(build_markdown(response.pages), encoding="utf-8")
+        md_path = output_dir / f"{path.stem}.md"
+        md_path.write_text(build_markdown(response.pages), encoding="utf-8")
 
-    return str(output_dir)
+        return str(output_dir)
+
+    except ToolException:
+        raise
+    except Exception as e:
+        raise ToolException(f"to_md failed: {e}")
+
+
+to_md.handle_tool_error = True

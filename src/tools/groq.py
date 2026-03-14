@@ -18,6 +18,7 @@ from pathlib import Path
 
 from groq import Groq
 from langchain.tools import tool
+from langchain_core.tools import ToolException
 
 from ..config import settings
 from ..prompts import prompts
@@ -67,40 +68,49 @@ def describe_image(image_path: str, query: str = "") -> str:
         image_path: Absolute or relative path to the image file.
         query: Optional question about the image. If empty, only the detailed description is returned.
     """
-    path = Path(image_path).expanduser().resolve()
+    try:
+        path = Path(image_path).expanduser().resolve()
 
-    if not path.exists():
-        raise FileNotFoundError(f"Image not found: {path}")
+        if not path.exists():
+            raise ToolException(f"Image not found: {path}")
 
-    ext = path.suffix.lower()
-    if ext not in SUPPORTED_EXTENSIONS:
-        raise ValueError(
-            f"Unsupported image extension '{ext}'. "
-            f"Supported: {sorted(SUPPORTED_EXTENSIONS)}"
+        ext = path.suffix.lower()
+        if ext not in SUPPORTED_EXTENSIONS:
+            raise ToolException(
+                f"Unsupported image extension '{ext}'. "
+                f"Supported: {sorted(SUPPORTED_EXTENSIONS)}"
+            )
+
+        system_prompt = prompts.get("vision")
+        image_data_uri = _encode_image(path)
+
+        # Build the user message — always include the image; append the query if given
+        user_content = []
+
+        user_text = "Please describe this image in full detail."
+        if query.strip():
+            user_text += f"\n\nAdditionally, answer the following question: {query.strip()}"
+        user_content.append({"type": "text", "text": user_text})
+        user_content.append({"type": "image_url", "image_url": {"url": image_data_uri}})
+
+        client = Groq(api_key=settings.groq_api_key)
+
+        response = client.chat.completions.create(
+            model=MODEL,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user",   "content": user_content},
+            ],
+            max_completion_tokens=2048,
+            temperature=0.2, # low temp -> factual, consistent descriptions
         )
 
-    system_prompt = prompts.get("vision")
-    image_data_uri = _encode_image(path)
+        return response.choices[0].message.content
 
-    # Build the user message — always include the image; append the query if given
-    user_content = []
+    except ToolException:
+        raise
+    except Exception as e:
+        raise ToolException(f"describe_image failed: {e}")
 
-    user_text = "Please describe this image in full detail."
-    if query.strip():
-        user_text += f"\n\nAdditionally, answer the following question: {query.strip()}"
-    user_content.append({"type": "text", "text": user_text})
-    user_content.append({"type": "image_url", "image_url": {"url": image_data_uri}})
 
-    client = Groq(api_key=settings.groq_api_key)
-
-    response = client.chat.completions.create(
-        model=MODEL,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user",   "content": user_content},
-        ],
-        max_completion_tokens=2048,
-        temperature=0.2, # low temp -> factual, consistent descriptions
-    )
-
-    return response.choices[0].message.content
+describe_image.handle_tool_error = True
