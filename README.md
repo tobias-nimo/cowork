@@ -9,7 +9,10 @@ A production-ready template for building [**LangChain Deep Agents**](https://doc
 | Python | ≥ 3.12 | [python.org](https://python.org) |
 | [uv](https://docs.astral.sh/uv/) | latest | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
 | Node.js | ≥ 18 | [nodejs.org](https://nodejs.org) |
+| [Pandoc](https://pandoc.org) | latest | `brew install pandoc` or [pandoc.org](https://pandoc.org/installing.html) |
+| LaTeX (for PDF export) | — | `brew install --cask mactex-no-gui` or [tug.org](https://tug.org/mactex/) |
 | [gws](https://github.com/googleworkspace/cli) (Google Workspace CLI) | latest | `npm install -g @googleworkspace/cli` |
+| Google Cloud CLI | latest | [docs.cloud.google](https://docs.cloud.google.com/sdk/docs/install-sdk) |
 
 ### Google Workspace auth (one-time)
 

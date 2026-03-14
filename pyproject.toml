@@ -16,10 +16,11 @@ dependencies = [
     "langchain-core>=0.3.0",
     "langchain-groq>=0.2.0",
     "langchain-mcp-adapters>=0.1.0",
+    "langgraph-cli[inmem]>=0.4.12",
     # ── Config ─────────────────────────────────────────────────────────────────
     "pydantic-settings>=2.0.0",
-    # ── LangGraph CLI ──────────────────────────────────────────────────────────
-    "langgraph-cli[inmem]>=0.4.12",
+    # ── Extras ──────────────────────────────────────────────────────────
+    "mistralai>=1.0.0",
 ]
 
 [dependency-groups]

@@ -13,7 +13,7 @@ import base64
 from pathlib import Path
 
 from langchain.tools import tool
-from mistralai import Mistral
+from mistralai.client import Mistral
 
 from ..config import settings
 
