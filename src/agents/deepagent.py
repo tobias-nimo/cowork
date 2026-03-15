@@ -2,8 +2,9 @@
 
 from deepagents import create_deep_agent
 from deepagents.backends import LocalShellBackend
-#from langgraph.checkpoint.memory import MemorySaver
 from langchain_groq import ChatGroq
+
+from datetime import date
 
 from ..config import settings
 from ..prompts import prompts
@@ -12,6 +13,7 @@ from .subagents import subagents
 from ..tools.md_convert import md_to_pdf, md_to_docx
 from ..tools.groq import describe_image
 from ..tools.mistral_ocr import to_md
+from ..utils import gather_skills
 
 # --- Chat Model ---
 llm = ChatGroq(
@@ -22,19 +24,23 @@ llm = ChatGroq(
 # --- Backend ---
 backend = LocalShellBackend(
     root_dir=settings.project_root,
-    inherit_env=False,
+    inherit_env=True,
     )
 
 # --- Deep Agent ---
 cowork_agent = create_deep_agent(
     # LLM + system prompt
     model=llm,
-    system_prompt=prompts.get("general"),
+    system_prompt=prompts.get(
+        "general",
+        project_root=settings.project_root,
+        today_date=str(date.today()),
+    ),
 
     # Core capabilities
     backend=backend,
     subagents=subagents,
-    skills=["./src/skills/general/"],
+    skills=gather_skills("./src/skills/general/"),
     memory=["./src/AGENTS.md"],
 
     # Tools
@@ -46,9 +52,8 @@ cowork_agent = create_deep_agent(
         "edit_file": True,   # Default options: approve, edit, reject
         "read_file": False,
     },
-    #checkpointer=MemorySaver(), # Checkpointer is REQUIRED for human-in-the-loop!
-    # But LangGraph API platform manages persistence - No checkpointer needed.
 
+    # Debug mode
      debug=settings.debug
 )
 

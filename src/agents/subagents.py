@@ -6,6 +6,7 @@ from ..config import settings
 from ..prompts import prompts
 
 from ..tools.tavily_mcp import web_search_tools
+from ..utils import gather_skills
 
 llm = ChatGroq(
     model="openai/gpt-oss-20b",
@@ -25,7 +26,7 @@ gws_subagent = {
     "model": llm,
     "description": " Interacts with the full Google Workspace suite (Drive, Gmail, Calendar, Docs and Sheets) via the gws MCP — use it to read/write files in drive, manage emails, schedule events.",
     "system_prompt": prompts.get("google"),
-    "skills": ["./src/skills/gws/"],
+    "skills": gather_skills("./src/skills/gws/"),
 }
 
 subagents = [research_subagent, gws_subagent]
