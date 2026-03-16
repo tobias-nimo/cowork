@@ -90,7 +90,20 @@ pnpm dev
 
 Then enter the same connection details as above.
 
-### Option C — LangGraph Studio
+### Option C — Deep Agents UI
+
+A chat UI purpose-built for Deep Agents, with native support for tool calls, HITL interrupts, and agent workflows.
+
+```bash
+git clone https://github.com/langchain-ai/deep-agents-ui.git
+cd deep-agents-ui
+yarn install
+yarn dev
+```
+
+Then enter the same connection details as above.
+
+### Option D — LangGraph Studio
 
 While `langgraph dev` is running, open LangGraph Studio at:
 
