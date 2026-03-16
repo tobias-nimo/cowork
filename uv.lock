@@ -322,6 +322,7 @@ source = { editable = "." }
 dependencies = [
     { name = "deepagents" },
     { name = "langchain" },
+    { name = "langchain-anthropic" },
     { name = "langchain-core" },
     { name = "langchain-groq" },
     { name = "langchain-mcp-adapters" },
@@ -344,6 +345,7 @@ dev = [
 requires-dist = [
     { name = "deepagents", specifier = ">=0.4.4" },
     { name = "langchain", specifier = ">=0.3.0" },
+    { name = "langchain-anthropic" },
     { name = "langchain-core", specifier = ">=0.3.0" },
     { name = "langchain-groq", specifier = ">=0.2.0" },
     { name = "langchain-mcp-adapters", specifier = ">=0.1.0" },
