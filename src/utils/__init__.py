@@ -1,3 +1,4 @@
-from .skills import gather_skills
+from .skills import skills_path
+from .memory import memory_path
 
-__all__ = ["gather_skills"]
+__all__ = ["skills_path", "memory_path"]

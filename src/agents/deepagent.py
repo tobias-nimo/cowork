@@ -13,7 +13,7 @@ from .subagents import subagents
 from ..tools.md_convert import md_to_pdf, md_to_docx
 from ..tools.groq import describe_image
 from ..tools.mistral_ocr import to_md
-from ..utils import gather_skills
+from ..utils import skills_path, memory_path
 
 # --- Chat Model ---
 llm = ChatGroq(
@@ -40,17 +40,17 @@ cowork_agent = create_deep_agent(
     # Core capabilities
     backend=backend,
     subagents=subagents,
-    skills=gather_skills("./src/skills/general/"),
-    memory=["./src/AGENTS.md"],
+    skills=[skills_path("general")],
+    memory=[memory_path()],
 
     # Tools
     tools=[to_md, md_to_pdf, md_to_docx, describe_image], # + execute + built-ins
 
     # HITL
     interrupt_on={
-        "write_file": True,  # Default options: approve, edit, reject
         "edit_file": True,   # Default options: approve, edit, reject
         "read_file": False,
+        "write_file": False,
     },
 
     # Debug mode
