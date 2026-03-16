@@ -166,6 +166,12 @@ def to_md(doc_path: str) -> str:
 
         # Output folder sits next to the source file, named after it (no extension)
         output_dir = path.parent / path.stem
+        md_path = output_dir / f"{path.stem}.md"
+
+        # Skip if already converted
+        if md_path.exists():
+            return str(output_dir)
+
         output_dir.mkdir(exist_ok=True)
 
         # Call Mistral API
@@ -182,8 +188,6 @@ def to_md(doc_path: str) -> str:
 
         # Save outputs
         save_images(response.pages, output_dir)
-
-        md_path = output_dir / f"{path.stem}.md"
         md_path.write_text(build_markdown(response.pages), encoding="utf-8")
 
         return str(output_dir)
