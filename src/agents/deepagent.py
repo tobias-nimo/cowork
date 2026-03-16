@@ -48,7 +48,7 @@ cowork_agent = create_deep_agent(
 
     # HITL
     interrupt_on={
-        "edit_file": True,   # Default options: approve, edit, reject
+        "edit_file": False, # If True default options are: approve, edit, reject
         "read_file": False,
         "write_file": False,
     },
