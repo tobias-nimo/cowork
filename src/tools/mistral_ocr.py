@@ -164,8 +164,8 @@ def to_md(doc_path: str) -> str:
         if not path.exists():
             raise ToolException(f"File not found: {path}")
 
-        # Output folder sits next to the source file, named after it (no extension)
-        output_dir = path.parent / path.stem
+        # Hidden output folder sits next to the source file
+        output_dir = path.parent / f".{path.stem}"
         md_path = output_dir / f"{path.stem}.md"
 
         # Skip if already converted

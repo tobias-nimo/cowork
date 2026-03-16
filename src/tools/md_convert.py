@@ -53,20 +53,34 @@ def _run_pandoc(args: list[str]) -> None:
 
 # ── Tools ─────────────────────────────────────────────────────────────────────
 
+def _resolve_output(output_path: str, suffix: str) -> Path:
+    path = Path(output_path).expanduser()
+    if not path.is_absolute():
+        path = Path(settings.project_root) / path
+    path = path.resolve()
+    if path.suffix.lower() != suffix:
+        path = path.with_suffix(suffix)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return path
+
+
 @tool
-def md_to_pdf(md_path: str) -> str:
+def md_to_pdf(md_path: str, output_path: str) -> str:
     """
     Convert a local Markdown file to PDF.
-    The PDF is saved next to the source file with the same name.
     Returns the absolute path to the generated PDF.
+
+    Args:
+        md_path: Path to the source .md file.
+        output_path: Path where the PDF will be saved.
     """
     path = _resolve_md(md_path)
-    output = path.with_suffix(".pdf")
+    output = _resolve_output(output_path, ".pdf")
 
     _run_pandoc([
         str(path),
         "-o", str(output),
-        "--pdf-engine=xelatex", # swap for 'wkhtmltopdf' if no LaTeX installed
+        "--pdf-engine=xelatex",
         "-V", "geometry:margin=1in",
         "-V", "fontsize=11pt",
     ])
@@ -74,14 +88,17 @@ def md_to_pdf(md_path: str) -> str:
     return str(output)
 
 @tool
-def md_to_docx(md_path: str) -> str:
+def md_to_docx(md_path: str, output_path: str) -> str:
     """
     Convert a local Markdown file to DOCX.
-    The DOCX is saved next to the source file with the same name.
     Returns the absolute path to the generated DOCX.
+
+    Args:
+        md_path: Path to the source .md file.
+        output_path: Path where the DOCX will be saved.
     """
     path = _resolve_md(md_path)
-    output = path.with_suffix(".docx")
+    output = _resolve_output(output_path, ".docx")
 
     _run_pandoc([
         str(path),
