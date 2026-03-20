@@ -2,7 +2,7 @@
 
 """
 Process a document (text or image) with Mistral OCR and save the output
-as a folder next to the source file containing:
+as a folder inside .workspace/docs/ containing:
   - <name>.md  : full concatenated markdown with embedded image references
   - img-0.jpeg : every extracted image, decoded from base64
 
@@ -139,8 +139,8 @@ def build_markdown(pages) -> str:
 def to_md(doc_path: str) -> str:
     """
     Runs OCR pipeline on local document or image.
-    Saves a Markdown file and extracted images into a folder next to the
-    source file (same name, no extension).
+    Saves a Markdown file and extracted images into
+    .workspace/docs/<name>/ inside the project root.
 
     Supported input formats:
       - Documents: PDF, DOCX, DOC, PPTX, PPT, XLSX, CSV, TXT, EPUB, XML,
@@ -164,15 +164,16 @@ def to_md(doc_path: str) -> str:
         if not path.exists():
             raise ToolException(f"File not found: {path}")
 
-        # Hidden output folder sits next to the source file
-        output_dir = path.parent / f".{path.stem}"
+        # Output folder inside the workspace directory
+        workspace = Path(settings.project_root) / ".workspace" / "docs"
+        output_dir = workspace / path.stem
         md_path = output_dir / f"{path.stem}.md"
 
         # Skip if already converted
         if md_path.exists():
             return str(output_dir)
 
-        output_dir.mkdir(exist_ok=True)
+        output_dir.mkdir(parents=True, exist_ok=True)
 
         # Call Mistral API
         client = Mistral(api_key=settings.mistral_api_key)
