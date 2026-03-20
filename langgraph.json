@@ -4,7 +4,7 @@
     "dependencies": ["."],
     "package_manager": "uv",
     "graphs": {
-      "agent": "src.agents.deepagent:cowork_agent"
+      "cowork": "src.agents.deepagent:cowork"
     },
     "env": ".env"
 }
