@@ -3,6 +3,7 @@
 from deepagents import create_deep_agent
 from deepagents.backends import LocalShellBackend
 from langchain_anthropic import ChatAnthropic
+from pathlib import Path
 
 from datetime import date
 
@@ -14,7 +15,11 @@ from ..tools.mistral_ocr import to_md
 from ..tools.md_convert import md_to_pdf, md_to_docx
 from ..tools.view_image import view_image
 from ..middleware import image_content_middleware
-from ..utils import skills_path, memory_path
+from ..utils import setup_workspace, SKILLS_DEST, AGENTS_MD
+
+# --- Workspace ---
+_ROOT = Path(settings.project_root)
+setup_workspace()
 
 # --- Chat Model ---
 llm = ChatAnthropic(model="claude-haiku-4-5-20251001", api_key=settings.anthropic_api_key)
@@ -23,7 +28,7 @@ llm = ChatAnthropic(model="claude-haiku-4-5-20251001", api_key=settings.anthropi
 backend = LocalShellBackend(root_dir=settings.project_root, inherit_env=True)
 
 # --- Deep Agent ---
-cowork_agent = create_deep_agent(
+cowork = create_deep_agent(
     # LLM + system prompt
     model=llm,
     system_prompt=prompts.get(
@@ -35,8 +40,8 @@ cowork_agent = create_deep_agent(
     # Core capabilities
     backend=backend,
     subagents=subagents,
-    skills=[skills_path("general")],
-    memory=[memory_path()],
+    skills=[str((SKILLS_DEST / "general").relative_to(_ROOT))],
+    memory=[str(AGENTS_MD.relative_to(_ROOT))],
 
     # Tools
     tools=[to_md, md_to_pdf, md_to_docx, view_image], # + built-ins
@@ -54,4 +59,3 @@ cowork_agent = create_deep_agent(
     # Debug mode
      debug=settings.debug
 )
-

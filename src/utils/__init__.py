@@ -1,4 +1,3 @@
-from .skills import skills_path
-from .memory import memory_path
+from .workspace import setup_workspace, SKILLS_DEST, MEMORIES_DIR, AGENTS_MD
 
-__all__ = ["skills_path", "memory_path"]
+__all__ = ["setup_workspace", "SKILLS_DEST", "MEMORIES_DIR", "AGENTS_MD"]

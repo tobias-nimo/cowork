@@ -5,9 +5,12 @@ from langchain_anthropic import ChatAnthropic
 from ..config import settings
 from ..prompts import prompts
 
-from ..tools.tavily_mcp import web_search_tools
-from ..utils import skills_path
+from pathlib import Path
 
+from ..tools.tavily_mcp import web_search_tools
+from ..utils import SKILLS_DEST
+
+_ROOT = Path(settings.project_root)
 llm = ChatAnthropic(model="claude-haiku-4-5-20251001", api_key=settings.anthropic_api_key)
 
 research_subagent = {
@@ -23,7 +26,7 @@ gws_subagent = {
     "model": llm,
     "description": " Interacts with the full Google Workspace suite (Drive, Gmail, Calendar, Docs and Sheets) via the gws MCP — use it to read/write files in drive, manage emails, schedule events.",
     "system_prompt": prompts.get("google"),
-    "skills": [skills_path("gws")],
+    "skills": [str((SKILLS_DEST / "gws").relative_to(_ROOT))],
 }
 
 subagents = [research_subagent, gws_subagent]
