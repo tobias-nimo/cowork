@@ -50,5 +50,4 @@ Thumbs.db
 *.swo
 
 # Runtime copies
-.skills/
-.memory/
+.workspace/
