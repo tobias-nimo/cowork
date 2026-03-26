@@ -1,16 +1,16 @@
 # agent/subagents.py
 
+from pathlib import Path
+
 from langchain_anthropic import ChatAnthropic
 
 from ..config import settings
 from ..prompts import prompts
-
-from pathlib import Path
-
 from ..tools.tavily_mcp import web_search_tools
 from ..utils import SKILLS_DEST
 
 _ROOT = Path(settings.project_root)
+
 llm = ChatAnthropic(model="claude-haiku-4-5-20251001", api_key=settings.anthropic_api_key)
 
 research_subagent = {
