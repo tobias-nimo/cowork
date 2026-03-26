@@ -13,6 +13,9 @@ A production-ready template for building [**LangChain Deep Agents**](https://doc
 | LaTeX (for PDF export) | — | `brew install --cask mactex-no-gui` or [tug.org](https://tug.org/mactex/) |
 | [gws](https://github.com/googleworkspace/cli) (Google Workspace CLI) | latest | `npm install -g @googleworkspace/cli` |
 | Google Cloud CLI | latest | [docs.cloud.google](https://docs.cloud.google.com/sdk/docs/install-sdk) |
+| [browser-use](https://github.com/browser-use/browser-use) (Browser automation CLI) | latest | `curl -fsSL https://browser-use.com/cli/install.sh \| bash` |
+| [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) | latest | `brew install cloudflared` |
+| [Tavily CLI](https://github.com/tavily-ai/skills) | latest | `uv tool install tavily-cli` |
 
 ### Google Workspace auth (one-time)
 
@@ -57,7 +60,7 @@ Copy `example.env` to `.env` and set the following:
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `GROQ_API_KEY` | Yes | [Groq](https://console.groq.com) API key — used for all LLM calls |
+| `ANTHROPIC_API_KEY` | Yes | [Anthropic](https://console.anthropic.com) API key — used for all LLM calls |
 | `MISTRAL_API_KEY` | Yes | [Mistral](https://console.mistral.ai) API key — used for OCR (`to_md` tool) |
 | `TAVILY_API_KEY` | Yes | [Tavily](https://tavily.com) API key — used by the research subagent |
 | `LANGCHAIN_TRACING_V2` | No | Set to `true` to enable LangSmith tracing |
@@ -74,7 +77,7 @@ This template ships **backend-only**. Connect any LangGraph-compatible chat UI t
 1. Open **[agentchat.vercel.app](https://agentchat.vercel.app)**
 2. Enter your connection details:
    - **Deployment URL**: `http://localhost:2024` (local dev) or your deployed URL
-   - **Graph ID**: `agent` (the key in `langgraph.json`)
+   - **Graph ID**: `cowork` (the key in `langgraph.json`)
    - **LangSmith API key**: optional, only needed for deployed (non-local) agents
 3. Start chatting — the UI auto-detects tool calls and HITL interrupts.
 
@@ -122,11 +125,13 @@ cowork/
 ├── src/
 │   ├── agents/
 │   │   ├── deepagent.py      # Main agent; exports `cowork_agent`
-│   │   └── subagents.py      # research-subagent, gws-subagent
+│   │   └── subagents.py      # research-subagent, browser-subagent, gws-subagent
 │   ├── tools/
 │   ├── prompts/
 │   ├── skills/
 │   │   ├── general/          # Skills loaded by the main agent
+│   │   ├── tavily/           # Skills loaded by the research-subagent
+│   │   ├── browser/          # Skills loaded by the browser-subagent
 │   │   └── gws/              # Skills loaded by the gws-subagent
 │   └── config.py             # Pydantic settings (loads from .env)
 ├── tests/                    # Pytest test suite
@@ -137,7 +142,7 @@ cowork/
 
 ## LLM Configuration
 
-The agent defaults to **Groq** (free tier, fast inference).
+The agent defaults to **Claude Haiku 4.5** via the Anthropic API.
 
 To switch providers, update `src/agents/deepagent.py` and `src/agents/subagents.py`:
 
@@ -146,16 +151,17 @@ To switch providers, update `src/agents/deepagent.py` and `src/agents/subagents.
 from langchain_openai import ChatOpenAI
 llm = ChatOpenAI(model="gpt-4o", api_key=settings.openai_api_key)
 
-# Anthropic
-from langchain_anthropic import ChatAnthropic
-llm = ChatAnthropic(model="claude-opus-4-6", api_key=settings.anthropic_api_key)
+# Groq
+from langchain_groq import ChatGroq
+llm = ChatGroq(model="llama-3.3-70b-versatile", api_key=settings.groq_api_key)
 ```
 
 ## Subagents
 
 | Subagent | Tools | Description |
 |----------|-------|-------------|
-| `research-subagent` | Tavily MCP | Web research and fact-finding |
+| `research-subagent` | Tavily CLI (`tvly`) | Web search, extraction, crawling, and deep research |
+| `browser-subagent` | browser-use CLI | Browser automation, form filling, screenshots, data extraction |
 | `gws-subagent` | Google Workspace MCP | Gmail, Drive, Calendar, Docs, Sheets |
 
 ## Skills
@@ -166,6 +172,8 @@ They live in `src/skills/<group>/<skill-name>/SKILL.md`.
 | Group | Path | Loaded by |
 |-------|------|-----------|
 | General | `src/skills/general/` | Main agent |
+| Tavily | `src/skills/tavily/` | `research-subagent` |
+| Browser | `src/skills/browser/` | `browser-subagent` |
 | Google Workspace | `src/skills/gws/` | `gws-subagent` |
 
 See `src/skills/general/skill-creator/SKILL.md` for the full guide on creating new skills.
@@ -176,8 +184,7 @@ The coordinator agent pauses and waits for human approval before:
 - Writing new files (`write_file`)
 - Editing existing files (`edit_file`)
 
-This is configured in `interrupt_on` inside `src/agent/graph.py`. Set a key to `False`
-to disable interrupts for that tool.
+This is configured via `interrupt_on` in the agent setup.
 
 ## Running Tests
 
@@ -190,4 +197,4 @@ uv run pytest -v
 - **LangSmith Tracing**: set `LANGCHAIN_TRACING_V2=true` and `LANGCHAIN_API_KEY` to send
   traces to LangSmith for debugging.
 - **Adding tools**: add LangChain tools to `src/tools/` and pass them to the appropriate
-  subagent in `src/agent/subagents.py`.
+  subagent in `src/agents/subagents.py`.

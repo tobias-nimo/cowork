@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A LangGraph-based multi-agent system ("cowork") built on LangChain Deep Agents. A coordinator agent orchestrates two specialized subagents (research, Google Workspace) with an extensible skills system. Uses Claude Haiku 4.5 as the default LLM.
+A LangGraph-based multi-agent system ("cowork") built on LangChain Deep Agents. A coordinator agent orchestrates three specialized subagents (research, browser, Google Workspace) with an extensible skills system. Uses Claude Haiku 4.5 as the default LLM.
 
 ## Commands
 
@@ -33,16 +33,17 @@ uv run ruff format --check src/ tests/
 Entry point: `src/agents/deepagent.py` exports `cowork` (the LangGraph graph).
 
 - **Main agent** (`deepagent.py`): Coordinator using `create_deep_agent()` with `LocalShellBackend`. Has tools for OCR (`to_md`), document conversion (`md_to_pdf`, `md_to_docx`), and image viewing (`view_image`). Uses HITL interrupts on `edit_file`.
-- **research-subagent** (`subagents.py`): Web research via Tavily MCP server.
+- **research-subagent** (`subagents.py`): Web search, extraction, crawling, and deep research via the Tavily CLI (`tvly`).
+- **browser-subagent** (`subagents.py`): Browser automation (navigation, form filling, screenshots, data extraction) via the `browser-use` CLI.
 - **gws-subagent** (`subagents.py`): Google Workspace operations (Drive, Gmail, Calendar, Docs, Sheets) via GWS MCP server.
 
 ### Skills System
 
-Skills are markdown-based packages in `src/skills/<group>/<skill-name>/SKILL.md` with YAML frontmatter (name, description) and optional `scripts/`, `references/`, `assets/` directories. At runtime, skills are copied to `<project_root>/.workspace/skills/` by `src/utils/skills.py`. General skills load into the main agent; GWS skills load into the gws-subagent.
+Skills are markdown-based packages in `src/skills/<group>/<skill-name>/SKILL.md` with YAML frontmatter (name, description) and optional `scripts/`, `references/`, `assets/` directories. At runtime, skills are copied to `<project_root>/.workspace/skills/` by `src/utils/skills.py`. General skills load into the main agent; tavily skills into the research-subagent; browser skills into the browser-subagent; GWS skills into the gws-subagent.
 
 ### Prompts
 
-System prompts are markdown files in `src/prompts/` loaded by `src/prompts/__init__.py` with variable injection (`{project_root}`, `{today_date}`). Files: `general.md` (main agent), `research.md`, `gws.md`.
+System prompts are markdown files in `src/prompts/` loaded by `src/prompts/__init__.py` with variable injection (`{project_root}`, `{today_date}`). Files: `general.md` (main agent), `research.md`, `browser.md`, `gws.md`.
 
 ### Middleware
 
@@ -68,5 +69,7 @@ The workspace init is idempotent — skipped if `.workspace/` already exists.
 - Ruff for linting (line-length 100, ignores E501)
 - pytest with `asyncio_mode = "auto"`
 - LangGraph config in `langgraph.json` (graph ID: `cowork`)
-- Node.js required for MCP servers (Tavily, GWS)
+- Node.js required for GWS MCP server
+- Tavily CLI (`tvly`) required for research subagent
+- `browser-use` CLI + `cloudflared` required for browser subagent
 - Pandoc + XeLaTeX required for document conversion tools
