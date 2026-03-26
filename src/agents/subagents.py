@@ -6,7 +6,6 @@ from langchain_anthropic import ChatAnthropic
 
 from ..config import settings
 from ..prompts import prompts
-from ..tools.tavily_mcp import web_search_tools
 from ..utils import SKILLS_DEST
 
 _ROOT = Path(settings.project_root)
@@ -18,7 +17,7 @@ research_subagent = {
     "model": llm,
     "description": "Performs precise, in-depth web research and returns structured, reliable findings.",
     "system_prompt": prompts.get("research"),
-    "tools": web_search_tools,
+    "skills": [str((SKILLS_DEST / "tavily").relative_to(_ROOT))]
 }
 
 gws_subagent = {
