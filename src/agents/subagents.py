@@ -8,16 +8,29 @@ from ..config import settings
 from ..prompts import prompts
 from ..utils import SKILLS_DEST
 
+from ..tools.md_tools import outline, search
+from ..tools.mistral_ocr import to_md
+from ..tools.view_image import view_image
+
+
 _ROOT = Path(settings.project_root)
 
 llm = ChatAnthropic(model="claude-haiku-4-5-20251001", api_key=settings.anthropic_api_key)
 
-research_subagent = {
-    "name": "research-subagent",
+web_research_subagent = {
+    "name": "web-research-subagent",
     "model": llm,
     "description": "Performs precise, in-depth web research and returns structured, reliable findings.",
-    "system_prompt": prompts.get("research"),
+    "system_prompt": prompts.get("web-research"),
     "skills": [str((SKILLS_DEST / "tavily").relative_to(_ROOT))]
+}
+
+local_research_subagent = {
+    "name": "local-research-subagent",
+    "model": llm,
+    "description": "Searches, navigates, and analyzes local documents and files — use it to find information in markdown files, PDFs, images, and Office documents within the workspace.",
+    "system_prompt": prompts.get("local-research"),
+    "tools": [to_md, outline, search, view_image]
 }
 
 gws_subagent = {
@@ -36,4 +49,9 @@ browser_subagent = {
     "skills": [str((SKILLS_DEST / "browser").relative_to(_ROOT))],
 }
 
-subagents = [research_subagent, browser_subagent, gws_subagent]
+subagents = [
+    local_research_subagent,
+    web_research_subagent,
+    browser_subagent,
+    gws_subagent
+]

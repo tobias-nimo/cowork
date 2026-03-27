@@ -125,7 +125,7 @@ cowork/
 ├── src/
 │   ├── agents/
 │   │   ├── deepagent.py      # Main agent; exports `cowork_agent`
-│   │   └── subagents.py      # research-subagent, browser-subagent, gws-subagent
+│   │   └── subagents.py      # local-research, web-research, browser, gws subagents
 │   ├── tools/
 │   ├── prompts/
 │   ├── skills/
@@ -160,7 +160,8 @@ llm = ChatGroq(model="llama-3.3-70b-versatile", api_key=settings.groq_api_key)
 
 | Subagent | Tools | Description |
 |----------|-------|-------------|
-| `research-subagent` | Tavily CLI (`tvly`) | Web search, extraction, crawling, and deep research |
+| `local-research-subagent` | `outline`, `search`, `to_md`, `view_image` | Local document search and analysis (BM25-ranked markdown section search, OCR) |
+| `web-research-subagent` | Tavily CLI (`tvly`) | Web search, extraction, crawling, and deep research |
 | `browser-subagent` | browser-use CLI | Browser automation, form filling, screenshots, data extraction |
 | `gws-subagent` | Google Workspace MCP | Gmail, Drive, Calendar, Docs, Sheets |
 
