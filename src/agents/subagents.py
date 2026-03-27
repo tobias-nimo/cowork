@@ -28,7 +28,7 @@ web_research_subagent = {
 local_research_subagent = {
     "name": "local-research-subagent",
     "model": llm,
-    "description": "Searches, navigates, and analyzes local documents and files — use it to find information in markdown files, PDFs, images, and Office documents within the workspace.",
+    "description": "Searches, navigates, and analyzes local documents and files — use it to find information in large markdown files within the workspace.",
     "system_prompt": prompts.get("local-research"),
     "tools": [to_md, outline, search, view_image]
 }

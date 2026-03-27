@@ -9,11 +9,10 @@ from langchain_anthropic import ChatAnthropic
 
 from ..config import settings
 from ..prompts import prompts
-from .subagents import subagents
-
-from ..tools.mistral_ocr import to_md
-from ..tools.view_image import view_image
 from ..middleware import image_content_middleware
+from ..tools.view_image import view_image
+from ..tools.mistral_ocr import to_md
+from .subagents import subagents
 from ..utils import setup_workspace, SKILLS_DEST, AGENTS_MD
 
 # Set up .workspace/

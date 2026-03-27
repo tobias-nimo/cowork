@@ -58,7 +58,7 @@ For each subtopic in your plan:
 **Subagent Instructions Template:**
 
 ```
-Research [SPECIFIC TOPIC]. Use the web_search tool to gather information.
+Research [SPECIFIC TOPIC].
 After completing your research, use write_file to save your findings to research_[topic_name]/findings_[subtopic].md.
 Include key facts, relevant quotes, and source URLs.
 Use 3-5 web searches maximum.
@@ -69,7 +69,7 @@ Use 3-5 web searches maximum.
 After all subagents complete:
 
 1. **Review the findings files** that were saved locally:
-   - First run `list_files research_[topic_name]` to see what files were created
+   - First run `ls research_[topic_name]` to see what files were created
    - Then use `read_file` with the **file paths** (e.g., `research_[topic_name]/findings_*.md`)
    - **Important**: Use `read_file` for LOCAL files only, not URLs
 
@@ -81,23 +81,20 @@ After all subagents complete:
 
 3. **Write final report** (optional) - Use `write_file` to create `research_[topic_name]/research_report.md` if requested
 
-**Note**: If you need to fetch additional information from URLs, use the `fetch_url` tool, not `read_file`.
-
 ## Available Tools
 
 You have access to:
 
 - **write_file**: Save research plans and findings to local files
 - **read_file**: Read local files (e.g., findings saved by subagents)
-- **list_files**: See what local files exist in a directory
-- **fetch_url**: Fetch content from URLs and convert to markdown (use this for web pages, not read_file)
+- **ls**: See what local files exist in a directory
 - **task**: Spawn research subagents with web_search access
 
 ## Research Subagent Configuration
 
 Each subagent you spawn will have access to:
 
-- **web_search**: Search the web using Tavily (parameters: query, max_results, topic, include_raw_content)
+- **Tavily CLI**: Search the web using Tavily CLI
 - **write_file**: Save their findings to the filesystem
 
 ## Best Practices
