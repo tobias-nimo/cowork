@@ -3,8 +3,8 @@
 """
 Process a document (text or image) with Mistral OCR and save the output
 as a folder inside .workspace/docs/ containing:
-  - <name>.md  : full concatenated markdown with embedded image references
-  - img-0.jpeg : every extracted image, decoded from base64
+  - <name>.md       : full concatenated markdown with image refs and page numbers
+  - figures/        : every extracted image, decoded from base64
 
 API LIMITS: Files must not exceed 50 MB and 1,000 pages.
 """
@@ -102,8 +102,11 @@ def build_document_payload(path: Path, doc_type: str) -> dict:
 def save_images(pages, output_dir: Path) -> None:
     """
     Decode every image embedded in the OCR response and write it to
-    output_dir using the image id as the filename (e.g. img-0.jpeg).
+    output_dir/figures/ using the image id as the filename (e.g. img-0.jpeg).
     """
+    figures_dir = output_dir / "figures"
+    figures_dir.mkdir(exist_ok=True)
+
     for page in pages:
         for img in page.images:
             if not img.image_base64:
@@ -114,22 +117,27 @@ def save_images(pages, output_dir: Path) -> None:
             if "," in raw_b64:
                 raw_b64 = raw_b64.split(",", 1)[1]
 
-            dest = output_dir / img.id
+            dest = figures_dir / img.id
             dest.write_bytes(base64.b64decode(raw_b64))
 
 
 def build_markdown(pages) -> str:
     """
     Concatenate per-page markdown into a single document.
-    The API already embeds the correct image placeholder syntax, e.g.
-      ![img-0.jpeg](img-0.jpeg)
-    so the markdown resolves correctly once images sit in the same folder.
+    Image references are rewritten to point to the figures/ subdirectory.
+    Each page ends with a 'Page n of N' footer.
     """
+    total = len(pages)
     parts = []
-    for page in pages:
+    for i, page in enumerate(pages, 1):
         md = (page.markdown or "").strip()
-        if md:
-            parts.append(md)
+        if not md:
+            continue
+        # Rewrite image references to point to figures/ subdirectory
+        for img in page.images:
+            md = md.replace(f"]({img.id})", f"](figures/{img.id})")
+        md += f"\n\n*Page {i} of {total}*"
+        parts.append(md)
     return "\n\n---\n\n".join(parts)
 
 
