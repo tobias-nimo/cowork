@@ -59,7 +59,7 @@ System prompts are markdown files in `src/prompts/` loaded by `src/prompts/__ini
 On first run, `src/utils/workspace.py:setup_workspace()` creates `.workspace/` in the project root containing:
 - `skills/` — copied from `src/skills/`, loaded into agents at runtime
 - `memories/` — empty dir for agent memory files (one markdown file per memory, with YAML frontmatter)
-- `AGENTS.md` — empty file for agent-managed notes
+- `COWORK.md` — empty file for agent-managed notes
 - `docs/` — created by OCR tool output
 
 The workspace init is idempotent — skipped if `.workspace/` already exists.

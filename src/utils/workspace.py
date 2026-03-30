@@ -10,7 +10,7 @@ WORKSPACE = _ROOT / ".workspace"
 SKILLS_SRC = _SRC / "skills"
 SKILLS_DEST = WORKSPACE / "skills"
 MEMORIES_DIR = WORKSPACE / "memories"
-AGENTS_MD = WORKSPACE / "AGENTS.md"
+COWORK_MD = WORKSPACE / "COWORK.md"
 
 
 def setup_workspace() -> None:
@@ -20,7 +20,7 @@ def setup_workspace() -> None:
     1. Create .workspace/
     2. Copy src/skills/ → .workspace/skills/
     3. Create an empty .workspace/memories/ directory
-    4. Create an empty .workspace/AGENTS.md file
+    4. Create an empty .workspace/COWORK.md file
     """
     if WORKSPACE.exists():
         return
@@ -28,4 +28,4 @@ def setup_workspace() -> None:
     WORKSPACE.mkdir(parents=True)
     shutil.copytree(SKILLS_SRC, SKILLS_DEST)
     MEMORIES_DIR.mkdir()
-    AGENTS_MD.touch()
+    COWORK_MD.touch()

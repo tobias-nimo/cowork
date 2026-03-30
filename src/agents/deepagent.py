@@ -13,7 +13,7 @@ from ..middleware import image_content_middleware
 from ..tools.view_image import view_image
 from ..tools.mistral_ocr import to_md
 from .subagents import subagents
-from ..utils import setup_workspace, SKILLS_DEST, AGENTS_MD
+from ..utils import setup_workspace, SKILLS_DEST, COWORK_MD
 
 # Set up .workspace/
 _ROOT = Path(settings.project_root)
@@ -39,7 +39,7 @@ cowork = create_deep_agent(
 
     # Skills + Memory
     skills=[str((SKILLS_DEST / "general").relative_to(_ROOT))],
-    memory=[str(AGENTS_MD.relative_to(_ROOT))],
+    memory=[str(COWORK_MD.relative_to(_ROOT))],
 
     # Tools
     tools=[
