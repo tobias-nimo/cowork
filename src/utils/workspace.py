@@ -13,19 +13,34 @@ MEMORIES_DIR = WORKSPACE / "memories"
 COWORK_MD = WORKSPACE / "COWORK.md"
 
 
+def sync_skills() -> None:
+    """Sync skills from src/skills/ into .workspace/skills/.
+
+    Copies new and updated skill files without removing skills that only
+    exist in the destination (i.e. project-specific skills are preserved).
+    """
+    for src_path in SKILLS_SRC.rglob("*"):
+        rel = src_path.relative_to(SKILLS_SRC)
+        dest_path = SKILLS_DEST / rel
+
+        if src_path.is_dir():
+            dest_path.mkdir(parents=True, exist_ok=True)
+        elif not dest_path.exists() or src_path.stat().st_mtime > dest_path.stat().st_mtime:
+            dest_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src_path, dest_path)
+
+
 def setup_workspace() -> None:
     """Initialise .workspace/ in the project root (idempotent).
 
-    On first run this will:
-    1. Create .workspace/
-    2. Copy src/skills/ → .workspace/skills/
-    3. Create an empty .workspace/memories/ directory
-    4. Create an empty .workspace/COWORK.md file
+    On every run this will:
+    1. Create .workspace/, memories/, and COWORK.md if missing
+    2. Sync src/skills/ → .workspace/skills/ (adds new/updated skills,
+       preserves project-specific skills, memories, docs, and COWORK.md)
     """
-    if WORKSPACE.exists():
-        return
+    WORKSPACE.mkdir(parents=True, exist_ok=True)
+    MEMORIES_DIR.mkdir(exist_ok=True)
+    if not COWORK_MD.exists():
+        COWORK_MD.touch()
 
-    WORKSPACE.mkdir(parents=True)
-    shutil.copytree(SKILLS_SRC, SKILLS_DEST)
-    MEMORIES_DIR.mkdir()
-    COWORK_MD.touch()
+    sync_skills()
