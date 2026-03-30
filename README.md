@@ -1,6 +1,6 @@
-# DeepAgent Template
+# Cowork
 
-A production-ready template for building [**LangChain Deep Agents**](https://docs.langchain.com/oss/python/deepagents/overview) with [**Agent Chat UI**](https://github.com/langchain-ai/agent-chat-ui).
+A LangChain implementation of Anthropic’s Cowork.
 
 ## Prerequisites
 
