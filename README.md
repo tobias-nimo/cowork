@@ -30,7 +30,7 @@ gws auth login   # authenticate with your Google account
 
 ```bash
 git clone <repo-url>
-cd deepagent-template
+cd cowork
 
 cp example.env .env
 # Fill in your API keys in .env
