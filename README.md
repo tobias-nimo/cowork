@@ -45,7 +45,7 @@ uv sync
 ### 3. Start the LangGraph backend
 
 ```bash
-uv run langgraph dev
+uv run langgraph dev --no-browser
 # Backend API: http://localhost:2024
 # LangGraph Studio: https://smith.langchain.com/studio/?baseUrl=http://localhost:2024
 ```
