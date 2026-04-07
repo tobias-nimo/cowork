@@ -2,7 +2,6 @@
 
 from pathlib import Path
 
-#from langchain_anthropic import ChatAnthropic
 from langchain_groq import ChatGroq
 
 from ..config import settings
@@ -16,7 +15,6 @@ from ..tools.view_image import view_image
 
 _ROOT = Path(settings.project_root)
 
-#llm = ChatAnthropic(model="claude-haiku-4-5-20251001", api_key=settings.anthropic_api_key)
 llm = ChatGroq(model="openai/gpt-oss-20b", api_key=settings.groq_api_key)
 
 web_research_subagent = {

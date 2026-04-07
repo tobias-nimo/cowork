@@ -1,11 +1,10 @@
-# agent/graph.py
+# agents/deepagent.py
 
 from pathlib import Path
 from datetime import date
 
 from deepagents import create_deep_agent
 from deepagents.backends import LocalShellBackend
-#from langchain_anthropic import ChatAnthropic
 from langchain_groq import ChatGroq
 
 from ..config import settings
@@ -65,5 +64,5 @@ cowork = create_deep_agent(
     middleware=[image_content_middleware],
 
     # Debug mode
-     debug=settings.debug
+    debug=settings.debug
 )

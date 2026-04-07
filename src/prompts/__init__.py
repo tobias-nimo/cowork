@@ -3,7 +3,7 @@ Prompt loader — reads markdown files from this directory by name.
 
 Usage:
     from src.prompts import prompts
-    text = prompts.get("coordinator-agent")  # loads coordinator-agent.md
+    text = prompts.get("general")  # loads general.md
 """
 
 from pathlib import Path
