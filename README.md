@@ -81,19 +81,7 @@ This template ships **backend-only**. Connect any LangGraph-compatible chat UI t
    - **LangSmith API key**: optional, only needed for deployed (non-local) agents
 3. Start chatting — the UI auto-detects tool calls and HITL interrupts.
 
-### Option B — Run Agent Chat UI locally
-
-```bash
-git clone https://github.com/langchain-ai/agent-chat-ui.git
-cd agent-chat-ui
-pnpm install
-pnpm dev
-# Open: http://localhost:5173
-```
-
-Then enter the same connection details as above.
-
-### Option C — Deep Agents UI
+### Option B — Deep Agents UI
 
 A chat UI purpose-built for Deep Agents, with native support for tool calls, HITL interrupts, and agent workflows.
 
@@ -106,7 +94,7 @@ yarn dev
 
 Then enter the same connection details as above.
 
-### Option D — LangGraph Studio
+### Option C — LangGraph Studio
 
 While `langgraph dev` is running, open LangGraph Studio at:
 
